@@ -1,17 +1,26 @@
 services:
-  kafka-producer:
+  order-service:
     build: .
-    container_name: kafka-producer
-    command: ["python3", "producer.py"]
+    container_name: order-service
+    command: ["python3", "order_service.py"]
     depends_on:
       - kafka
     stdin_open: true
     tty: true
 
-  kafka-consumer:
+  payment-service:
     build: .
-    container_name: kafka-consumer
-    command: ["python3", "consumer.py"]
+    container_name: payment-service
+    command: ["python3", "payment_service.py"]
+    depends_on:
+      - kafka
+    stdin_open: true
+    tty: true
+
+  delivery-service:
+    build: .
+    container_name: delivery-service
+    command: ["python3", "delivery_service.py"]
     depends_on:
       - kafka
     stdin_open: true
@@ -28,7 +37,6 @@ services:
     environment:
       KAFKA_BROKER_ID: 1
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
     depends_on:
